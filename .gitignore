@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+uploads/
+*.xlsx
+*.pyc
+__pycache__/
+.venv/
+venv/
+.DS_Store
+client/dist/
+server/uploads/
+python-service/.venv/

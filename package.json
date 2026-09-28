@@ -1,0 +1,10 @@
+{
+  "name": "bank2excel",
+  "private": true,
+  "description": "Bank statement PDF to Excel converter",
+  "scripts": {
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "extractor": "python python-service/app.py"
+  }
+}
