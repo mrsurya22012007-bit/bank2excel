@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { batchesRouter } from "./routes/batches.js";
 
 const app = express();
-const port = Number(process.env.PORT) || 4000;
+const port = process.env.PORT || 4000;
 const origin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
 app.use(cors({ origin }));
@@ -37,9 +37,10 @@ async function start() {
     process.exit(1);
   }
 
-  app.listen(port, () => {
-    console.log(`Bank2Excel API listening on http://127.0.0.1:${port}`);
-  });
+  
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Bank2Excel API listening on port ${port}`);
+});
 }
 
 start();
