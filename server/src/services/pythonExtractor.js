@@ -18,6 +18,8 @@ console.log("Calling extractor:", `${EXTRACTOR_URL}/extract`);
     });
     return response.data;
   } catch (error) {
+    console.error("Extractor request failed:", error.code, error.message);
+    
     if (error.code === "ECONNREFUSED") {
       const err = new Error("PDF extractor is not running. Start the Python service on port 5001.");
       err.status = 503;
