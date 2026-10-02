@@ -8,6 +8,8 @@ export async function extractPdfBuffer(buffer, filename) {
   form.append("file", buffer, { filename, contentType: "application/pdf" });
 
   try {
+    console.log("Extractor URL:", EXTRACTOR_URL);
+console.log("Calling extractor:", `${EXTRACTOR_URL}/extract`);
     const response = await axios.post(`${EXTRACTOR_URL}/extract`, form, {
       headers: form.getHeaders(),
       maxBodyLength: Infinity,
