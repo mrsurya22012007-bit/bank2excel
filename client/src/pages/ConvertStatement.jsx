@@ -236,7 +236,7 @@ export default function ConvertStatement() {
           onClick={() => inputRef.current?.click()}
           className="mt-6 rounded-full bg-parchment px-5 py-2 text-sm text-ink/80"
         >
-          {busy ? "Extracting…" : "Zero Persistent PDF Files • Parsed In-Memory"}
+          {busy ? "Extracting…" : "Upload a PDF • Processed temporarily • Original file not stored"}
         </button>
         <input
           ref={inputRef}
