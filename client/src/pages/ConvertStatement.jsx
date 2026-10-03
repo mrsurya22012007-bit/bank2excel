@@ -230,14 +230,14 @@ export default function ConvertStatement() {
         <p className="mx-auto mt-3 max-w-2xl text-ink/70">
           Supports scanned raster or native vector bank PDFs (up to 50MB). Automated tabular tokenization via Python Flask, pdfplumber & OCR fallback.
         </p>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => inputRef.current?.click()}
-          className="mt-6 rounded-full bg-parchment px-5 py-2 text-sm text-ink/80"
-        >
-          {busy ? "Extracting…" : "Upload a PDF • Processed temporarily • Original file not stored"}
-        </button>
+       <button
+  type="button"
+  disabled={busy}
+  onClick={() => inputRef.current?.click()}
+  className="mt-6 rounded-full bg-ink px-5 py-2 text-sm text-white"
+>
+  {busy ? "Extracting…" : "Upload a PDF • Processed temporarily • Original file not stored"}
+</button>
         <input
           ref={inputRef}
           type="file"
