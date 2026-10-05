@@ -10,11 +10,10 @@ body,
 
 body {
   @apply text-ink font-sans antialiased;
- background:
-  radial-gradient(circle at 10% 10%, #d4f1e4 0%, transparent 35%),
-  radial-gradient(circle at 90% 20%, #f8e7c9 0%, transparent 35%),
-  radial-gradient(circle at 50% 100%, #cfe8df 0%, transparent 40%),
-  #f5f3ed;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(231, 240, 235, 0.9), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(248, 231, 201, 0.55), transparent 24%),
+    linear-gradient(135deg, #f8faf8 0%, #f4efe6 55%, #eef5f1 100%);
 }
 
 input[type="number"]::-webkit-inner-spin-button,
