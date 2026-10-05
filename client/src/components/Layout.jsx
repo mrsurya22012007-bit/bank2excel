@@ -15,7 +15,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-ink text-champagne">
+      <header className="border-b border-ink/10 bg-[#063f31]/95 text-champagne shadow-[0_8px_30px_rgba(6,78,59,0.20)] backdrop-blur-md">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-3 px-4 py-3 lg:px-6">
           <div className="flex items-center gap-3 pr-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-md border border-champagne/40">
@@ -81,7 +81,7 @@ export default function Layout() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 px-4 py-1 text-center text-[10px] tracking-wide text-champagne/60 lg:px-6">
+        <div className="border-t border-champagne/20 bg-black/10 px-4 py-2 text-center text-[11px] font-bold tracking-[0.12em] text-champagne lg:px-6">
           LOCAL WORKSTATION • PDF EXTRACTION • BALANCE VERIFICATION • EXCEL EXPORT • PERSISTENT BATCH HISTORY
         </div>
       </header>

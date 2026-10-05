@@ -144,12 +144,12 @@ export default function ConvertStatement() {
     batch.reconciliationStatus === "balanced";
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 px-4 py-8 lg:px-6">
+    <div className="mx-auto max-w-[1280px] space-y-6 rounded-[2rem] bg-white/30 px-4 py-8 lg:px-6">
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
       )}
 
-      <section className="relative overflow-hidden rounded-2xl border border-ink/10 bg-white p-6 shadow-card">
+      <section className="relative overflow-hidden rounded-3xl border border-ink/10 bg-[#fffdf8]/95 p-6 shadow-[0_14px_40px_rgba(6,78,59,0.12)]">
         <div className="pointer-events-none absolute -right-8 -top-16 h-48 w-48 rounded-full bg-champagne/70 blur-2xl" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex gap-4">
@@ -217,7 +217,7 @@ export default function ConvertStatement() {
           setDragOver(false);
           handleFiles(event.dataTransfer.files);
         }}
-        className={`rounded-2xl border-2 border-dashed bg-white px-6 py-12 text-center shadow-card ${
+        className={`rounded-3xl border-2 border-dashed border-ink/20 bg-gradient-to-br from-sage/70 via-white/90 to-champagne/40 px-6 py-14 text-center shadow-[0_12px_40px_rgba(6,78,59,0.12)] ${
           dragOver ? "border-ink bg-sage/40" : "border-ink/20"
         }`}
       >
@@ -256,14 +256,14 @@ export default function ConvertStatement() {
         ))}
       </p>
 
-      <section className="rounded-2xl border border-ink/10 bg-white p-6 shadow-card">
+      <section className="rounded-3xl border border-ink/10 bg-[#fffdf8]/95 p-6 shadow-[0_14px_40px_rgba(6,78,59,0.12)]">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 font-serif text-xl">
-            <span className="inline-block h-4 w-4 rounded-sm border border-ink" />
-            AUTOMATED AUDIT & BALANCE VERIFICATION
-          </h2>
-          <p className="text-xs text-ink/50">Method: Discrete Interval Summation</p>
-        </div>
+  <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-ink">
+    <span className="inline-block h-4 w-4 rounded-sm border border-ink" />
+    AUTOMATED AUDIT & BALANCE VERIFICATION
+  </h2>
+  <p className="text-xs font-medium text-ink/80">Method: Discrete Interval Summation</p>
+</div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <Metric
             label="OPENING BALANCE"
@@ -303,7 +303,7 @@ export default function ConvertStatement() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-ink/10 bg-white p-4 shadow-card md:p-6">
+      <section className="rounded-3xl border-2 border-white/70 bg-white/80 p-4 shadow-[0_20px_50px_rgba(6,78,59,0.18)] backdrop-blur-md md:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {[
             ["all", `All (${batch?.transactionCount || 0})`],
@@ -388,12 +388,16 @@ export default function ConvertStatement() {
         </p>
       </section>
 
-      <section className="rounded-2xl border border-ink/10 bg-white p-6 shadow-card">
+      <section className="rounded-3xl border border-ink/10 bg-white/90 p-6 shadow-[0_12px_40px_rgba(6,78,59,0.10)] backdrop-blur-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 className="font-serif text-xl">Excel Export Configuration</h2>
-            <p className="text-sm text-ink/60">Structured workbooks with audit formulas. Workbook format: Excel 2010+ (.xlsx)</p>
-          </div>
+         <div>
+  <h2 className="font-serif text-xl font-bold text-ink">
+    Excel Export Configuration
+  </h2>
+  <p className="text-sm text-ink/80">
+    Structured workbooks with audit formulas. Workbook format: Excel 2010+ (.xlsx)
+  </p>
+</div>
         </div>
         <div className="mt-4 grid gap-6 md:grid-cols-2 text-sm">
           <ul className="space-y-2">
