@@ -336,7 +336,7 @@ export default function ConvertStatement() {
 
         <div className="overflow-x-auto">
           <table className="min-w-[980px] w-full text-left text-sm">
-            <thead className="text-[11px] tracking-wide text-ink/50">
+            <thead className="text-[11px] font-semibold tracking-wide text-ink/80">
               <tr>
                 <th className="px-2 py-2">DATE</th>
                 <th className="px-2 py-2">DESCRIPTION</th>
@@ -383,7 +383,7 @@ export default function ConvertStatement() {
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-ink/50">
+        <p className="mt-3 text-xs font-medium text-ink/70">
           Running Balance Logic: Balance[i] = Balance[i-1] + Credit[i] − Debit[i]. Showing {visible.length} of {batch?.transactionCount || 0} ledger lines.
         </p>
       </section>
