@@ -1,23 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
 
-html,
-body,
-#root {
-  min-height: 100%;
-}
+  body {
+    @apply text-ink font-sans antialiased;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(231, 240, 235, 0.9), transparent 28%),
+      radial-gradient(circle at 90% 20%, rgba(248, 231, 201, 0.55), transparent 24%),
+      linear-gradient(135deg, #f8faf8 0%, #f4efe6 55%, #eef5f1 100%);
+  }
 
-body {
-  @apply text-ink font-sans antialiased;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(231, 240, 235, 0.9), transparent 28%),
-    radial-gradient(circle at 90% 20%, rgba(248, 231, 201, 0.55), transparent 24%),
-    linear-gradient(135deg, #f8faf8 0%, #f4efe6 55%, #eef5f1 100%);
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }

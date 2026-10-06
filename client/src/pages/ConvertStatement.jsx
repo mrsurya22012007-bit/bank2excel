@@ -431,9 +431,10 @@ export default function ConvertStatement() {
 function Metric({ label, value, hint, valueClass = "" }) {
   return (
     <div className="rounded-xl bg-cream p-4">
-      <p className="text-[11px] tracking-wide text-ink/50">{label}</p>
+      <p className="text-[11px] font-semibold tracking-wide text-ink/80">{label}</p>
       <div className={`mt-2 font-serif text-2xl ${valueClass}`}>{value}</div>
-      <p className="mt-2 text-xs text-ink/50">{hint}</p>
+      <p className="mt-2 text-xs font-medium text-ink/70">{hint}</p>
     </div>
   );
 }
+
