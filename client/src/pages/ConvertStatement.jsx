@@ -217,7 +217,7 @@ export default function ConvertStatement() {
           setDragOver(false);
           handleFiles(event.dataTransfer.files);
         }}
-        className={`rounded-3xl border-2 border-dashed border-ink/20 bg-gradient-to-br from-sage/70 via-white/90 to-champagne/40 px-6 py-14 text-center shadow-[0_12px_40px_rgba(6,78,59,0.12)] ${
+        className={`rounded-3xl border-2 border-dashed border-ink/20 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 px-6 py-14 text-center shadow-[0_12px_40px_rgba(6,78,59,0.12)] ${
           dragOver ? "border-ink bg-sage/40" : "border-ink/20"
         }`}
       >
@@ -226,7 +226,7 @@ export default function ConvertStatement() {
             <path d="M7 26h10a3 3 0 0 0 3-3V10l-7-8H7a3 3 0 0 0-3 3v18a3 3 0 0 0 3 3Z" stroke="currentColor" strokeWidth="1.6" />
           </svg>
         </div>
-        <h2 className="font-serif text-2xl">Drag & drop bank statement PDF here or browse local ledger files</h2>
+        <h2 className="font-sans text-2xl font-semibold">Drag & drop bank statement PDF here or browse local ledger files</h2>
         <p className="mx-auto mt-3 max-w-2xl text-ink/70">
           Supports scanned raster or native vector bank PDFs (up to 50MB). Automated tabular tokenization via Python Flask, pdfplumber & OCR fallback.
         </p>
@@ -256,7 +256,7 @@ export default function ConvertStatement() {
         ))}
       </p>
 
-      <section className="rounded-3xl border border-ink/10 bg-[#fffdf8]/95 p-6 shadow-[0_14px_40px_rgba(6,78,59,0.12)]">
+      <section className="rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-100 via-indigo-50 to-blue-100 p-6 shadow-[0_14px_40px_rgba(23,59,108,0.14)]">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
   <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-ink">
     <span className="inline-block h-4 w-4 rounded-sm border border-ink" />
@@ -303,7 +303,7 @@ export default function ConvertStatement() {
         </div>
       </section>
 
-      <section className="rounded-3xl border-2 border-white/70 bg-white/80 p-4 shadow-[0_20px_50px_rgba(6,78,59,0.18)] backdrop-blur-md md:p-6">
+      <section className="rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-sky-50 via-white to-blue-100 p-4 shadow-[0_20px_50px_rgba(23,59,108,0.14)] backdrop-blur-md md:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {[
             ["all", `All (${batch?.transactionCount || 0})`],
@@ -391,8 +391,8 @@ export default function ConvertStatement() {
       <section className="rounded-3xl border border-ink/10 bg-white/90 p-6 shadow-[0_12px_40px_rgba(6,78,59,0.10)] backdrop-blur-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
          <div>
-  <h2 className="font-serif text-xl font-bold text-ink">
-    Excel Export Configuration
+  <h2 className="font-sans text-xl font-semibold text-ink">
+  Excel Export Configuration
   </h2>
   <p className="text-sm text-ink/80">
     Structured workbooks with audit formulas. Workbook format: Excel 2010+ (.xlsx)

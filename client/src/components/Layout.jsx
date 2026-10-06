@@ -1,5 +1,4 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-
 const profiles = [
   "JPMorgan Chase",
   "Bank of America",
@@ -15,7 +14,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-ink/10 bg-[#063f31]/95 text-champagne shadow-[0_8px_30px_rgba(6,78,59,0.20)] backdrop-blur-md">
+      <header className="border-b border-white/20 bg-gradient-to-r from-[#102B50] via-[#173B6C] to-[#2B5D96] text-champagne shadow-[0_8px_30px_rgba(23,59,108,0.20)] backdrop-blur-md">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-3 px-4 py-3 lg:px-6">
           <div className="flex items-center gap-3 pr-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-md border border-champagne/40">
@@ -28,7 +27,7 @@ export default function Layout() {
               </svg>
             </div>
             <div>
-              <p className="font-serif text-lg italic leading-none">Bank2Excel</p>
+              <p className="font-sans text-lg font-bold tracking-tight">Bank2Excel</p>
               <p className="mt-1 text-[10px] tracking-[0.18em] text-champagne/70">
                 AUDIT LEDGER PARSER
               </p>

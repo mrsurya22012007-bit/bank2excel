@@ -47,7 +47,7 @@ export default function BatchHistory() {
 
   return (
     <div className="mx-auto max-w-[1280px] space-y-6 px-4 py-8 lg:px-6">
-      <section className="rounded-2xl border border-ink/10 bg-white p-6 shadow-card">
+      <section className="rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-100 via-indigo-50 to-blue-100 p-6 shadow-[0_14px_40px_rgba(23,59,108,0.14)]">
         <h1 className="font-serif text-3xl">Batch History</h1>
         <p className="mt-2 max-w-3xl text-ink/70">
           Previously processed statements stored in MongoDB. Search by filename or bank, filter by reconciliation status, then view, download, or delete a batch.

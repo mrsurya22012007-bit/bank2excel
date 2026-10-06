@@ -4,11 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: {
-          DEFAULT: "#064E3B",
-          deep: "#04382B",
-          muted: "#3D6B5C",
-        },
+       ink: {
+  DEFAULT: "#173B6C",
+  deep: "#102B50",
+  muted: "#4F6F95",
+      },
         champagne: {
           DEFAULT: "#F8E7C9",
           dark: "#E6D4A8",
