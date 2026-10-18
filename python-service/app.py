@@ -40,12 +40,14 @@ def extract():
     try:
         result = extract_statement(data, filename)
         return jsonify(result)
+   
     except Exception as exc:
-    app.logger.exception("PDF extraction failed")
-    return jsonify({
-        "ok": False,
-        "error": f"Extraction failed: {exc}"
-    }), 500
+        app.logger.exception("PDF extraction failed")
+        return jsonify({
+            "ok": False,
+            "error": f"Extraction failed: {exc}"
+        }), 500
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "5001"))
     app.run(host="0.0.0.0", port=port, debug=False)
