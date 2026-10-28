@@ -15,9 +15,9 @@ export async function buildWorkbook(batch) {
     { header: "Date", key: "date", width: 14 },
     { header: "Description", key: "description", width: 48 },
     { header: "Reference Number", key: "reference", width: 20 },
-    { header: "Debit", key: "debit", width: 16, style: { numFmt: "#,##0.00" } },
-    { header: "Credit", key: "credit", width: 16, style: { numFmt: "#,##0.00" } },
-    { header: "Balance", key: "balance", width: 16, style: { numFmt: "#,##0.00" } },
+    { header: "Debit", key: "debit", width: 16, style: { numFmt: '"₹"#,##0.00' } },
+    { header: "Credit", key: "credit", width: 16, style: { numFmt: '"₹"#,##0.00' } },
+    { header: "Balance", key: "balance", width: 16, style: { numFmt: '"₹"#,##0.00' } },    
     { header: "Status", key: "status", width: 12 },
     { header: "Flags", key: "flags", width: 28 },
   ];
@@ -57,17 +57,39 @@ export async function buildWorkbook(batch) {
     ["Reconciliation Status", batch.reconciliationStatus],
     ["Verification Formula", "Opening + Credits - Debits = Closing"],
   ];
-  summaryRows.forEach((row) => summary.addRow({ metric: row[0], value: row[1] ?? "" }));
+summaryRows.forEach((row) => {
+  const excelRow = summary.addRow({
+    metric: row[0],
+    value: row[1] ?? "",
+  });
 
-  const audit = workbook.addWorksheet("Audit");
+  const currencyMetrics = [
+    "Opening Balance",
+    "Total Credits",
+    "Total Debits",
+    "Calculated Closing Balance",
+    "Stated Closing Balance",
+    "Discrepancy",
+  ];
+
+  if (currencyMetrics.includes(row[0])) {
+    excelRow.getCell("value").numFmt = '"₹"#,##0.00';
+  }
+});  const audit = workbook.addWorksheet("Audit");
   audit.columns = [
     { header: "Check", key: "check", width: 40 },
     { header: "Result", key: "result", width: 48 },
   ];
   audit.getRow(1).font = { bold: true, color: { argb: "FFF8E7C9" } };
   audit.getRow(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF064E3B" } };
+  const formatINR = (amount) =>
+  `₹${Number(amount ?? 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
   const formula =
-    `(${batch.openingBalance ?? 0}) + (${batch.totalCredits ?? 0}) - (${batch.totalDebits ?? 0}) = ${batch.calculatedClosingBalance ?? ""}`;
+    `(${formatINR(batch.openingBalance)}) + (${formatINR(batch.totalCredits)}) - (${formatINR(batch.totalDebits)}) = ${formatINR(batch.calculatedClosingBalance)}`;
   audit.addRow({ check: "Balance identity", result: formula });
   audit.addRow({
     check: "Discrepancy vs stated close",

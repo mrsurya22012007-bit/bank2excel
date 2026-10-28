@@ -24,7 +24,7 @@ DATE_RE = re.compile(
 HEADER_HINTS = {
     "date": ("date", "txn date", "trans date", "posting date", "value date", "posted"),
     "value_date": ("value date", "value dt", "val date"),
-    "description": ("description", "narration", "particulars", "details", "payee", "memo", "transaction"),
+    "description": ("description", "narration", "particulars", "details", "payee", "memo", "transaction", "remarks"),
     "reference": ("ref", "reference", "cheque", "check", "chq", "txn id", "utr", "instrument"),
     "debit": ("debit", "withdrawal", "withdrawals", "dr", "money out", "paid out"),
     "credit": ("credit", "deposit", "deposits", "money in", "paid in"),
@@ -47,15 +47,24 @@ BANK_HINTS = (
 )
 
 
-def extract_statement(pdf_bytes: bytes, filename: str) -> dict[str, Any]:
+def extract_statement(
+    pdf_bytes: bytes,
+    filename: str,
+    password: str | None = None
+) -> dict[str, Any]:
     sha256 = hashlib.sha256(pdf_bytes).hexdigest()
     warnings: list[str] = []
     ocr_used = False
     method = "pdfplumber"
 
-    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+    with pdfplumber.open(
+        io.BytesIO(pdf_bytes),
+        password=password or ""
+    ) as pdf:
         page_count = len(pdf.pages)
-        native_text = "\n".join((page.extract_text() or "") for page in pdf.pages)
+        native_text = "\n".join(
+            (page.extract_text() or "") for page in pdf.pages
+        )
         tables = []
         for page in pdf.pages:
             for table in page.extract_tables() or []:
@@ -83,15 +92,16 @@ def extract_statement(pdf_bytes: bytes, filename: str) -> dict[str, Any]:
             }
 
     full_text = native_text
+
+
     bank_hint = _detect_bank(full_text)
     opening, opening_uncertain = _find_labeled_amount(full_text, OPENING_HINTS)
     stated_closing, closing_uncertain = _find_labeled_amount(full_text, CLOSING_HINTS)
-
     transactions = _extract_from_tables(tables)
+    
     if not transactions:
-       transactions = _extract_from_text_lines(full_text.splitlines(), opening)
-       method = f"{method}+line-parse"
-
+        transactions = _extract_from_text_lines(full_text.splitlines(), opening)
+        method = f"{method}+line-parse"
     if ocr_used:
         for tx in transactions:
             tx["flags"] = sorted(set(tx.get("flags") or []) | {"ocr"})
@@ -102,7 +112,7 @@ def extract_statement(pdf_bytes: bytes, filename: str) -> dict[str, Any]:
         warnings.append("Opening balance was parsed with low confidence.")
     if closing_uncertain:
         warnings.append("Stated closing balance was parsed with low confidence.")
-    print("DEBUG PARSED TRANSACTIONS:", transactions)
+    
 
     if not transactions:
         return {
@@ -179,17 +189,35 @@ def _find_account_hint(text: str) -> str | None:
     return f"*******{digits[-4:]}"
 
 
-def _find_labeled_amount(text: str, labels: tuple[str, ...]) -> tuple[float | None, bool]:
-    lines = [re.sub(r"\s+", " ", line).strip() for line in text.splitlines() if line.strip()]
-    for line in lines:
+def _find_labeled_amount(
+    text: str,
+    labels: tuple[str, ...],
+) -> tuple[float | None, bool]:
+    lines = [
+        re.sub(r"\s+", " ", line).strip()
+        for line in text.splitlines()
+        if line.strip()
+    ]
+
+    for index, line in enumerate(lines):
         lower = line.lower()
-        if any(label in lower for label in labels):
-            amounts = _amounts_in_text(line)
+
+        if not any(label in lower for label in labels):
+            continue
+
+        # First, look for amounts on the same line as the label.
+        amounts = _amounts_in_text(line)
+        if amounts:
+            value = amounts[0] if labels == OPENING_HINTS else amounts[-1]
+            return value, False
+
+        # If the label is alone, check nearby lines for the amount.
+        for nearby in lines[index + 1:index + 4]:
+            amounts = _amounts_in_text(nearby)
             if amounts:
-                print("DEBUG BALANCE:", line, "| LABELS:", labels, "| AMOUNTS:", amounts)
-                if labels == OPENING_HINTS:
-                    return amounts[0], False
-                return amounts[-1], False
+                value = amounts[0] if labels == OPENING_HINTS else amounts[-1]
+                return value, True
+
     return None, False
 
 
@@ -329,7 +357,7 @@ def _row_from_mapping(raw: list[Any], mapping: dict[str, int]) -> dict[str, Any]
         flags.append("uncertain-date")
         date = str(date_raw).strip()
 
-    value_date = _normalize_date(cell("value_date")) if "value_date" in mapping else date
+    value_date = _normalize_date(cell("value_date")) if "value_date" in mapping else date    
     description = cell("description")
     reference = cell("reference")
     debit = _parse_amount(cell("debit")) if "debit" in mapping else None
@@ -372,43 +400,57 @@ def _row_from_mapping(raw: list[Any], mapping: dict[str, int]) -> dict[str, Any]
     }
 
 
+
 def _extract_from_text_lines(
     lines: list[str],
     opening_balance: float | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     previous_balance = opening_balance
+
     date_line = re.compile(
-        r"^(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})\s+(.*)$"
+        r"^(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|"
+        r"\d{4}[/-]\d{1,2}[/-]\d{1,2}|"
+        r"\d{1,2}\s+[A-Za-z]{3,9}\s+\d{2,4})\s+(.*)$"
     )
+    amount_pattern = (
+        r"\(?\$?-?\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?\)?|"
+        r"\(?\$?-?\d+\.\d{2}\)?"
+    )
+
     for line in lines:
         text = re.sub(r"\s+", " ", line).strip()
         if not text:
             continue
-        lower = text.lower()
-        if any(h in lower for h in OPENING_HINTS + CLOSING_HINTS):
+
+        if any(h in text.lower() for h in OPENING_HINTS + CLOSING_HINTS):
             continue
+
         match = date_line.match(text)
         if not match:
             continue
-        date = _normalize_date(match.group(1))
-        rest = match.group(2)
+
+        date_raw, rest = match.group(1), match.group(2)
+        date = _normalize_date(date_raw)
         amounts = _amounts_in_text(rest)
-        print("DEBUG LINE:", text, "| AMOUNTS:", amounts)
+
         if not amounts:
             continue
+
         flags = ["line-parsed"]
-        debit = credit = extracted_balance = None
+        debit = credit = balance = None
+
         if len(amounts) == 1:
+            # Amount side is unclear; preserve the row for review.
             flags.append("missing-amount-side")
-            # Do not guess debit vs credit.
+
         elif len(amounts) == 2:
-            extracted_balance = amounts[-1]
+            # Assumes movement followed by running balance.
+            balance = amounts[-1]
             movement = abs(amounts[0])
 
             if previous_balance is not None:
-                change = extracted_balance - previous_balance
-
+                change = round(balance - previous_balance, 2)
                 if change > 0:
                     credit = movement
                 elif change < 0:
@@ -418,42 +460,50 @@ def _extract_from_text_lines(
             else:
                 flags.append("ambiguous-debit-credit")
 
-            previous_balance = extracted_balance
-        else:
-            extracted_balance = amounts[-1]
-            debit_candidate, credit_candidate = amounts[0], amounts[1]
-            if debit_candidate and not credit_candidate:
-                debit, credit = debit_candidate, None
-            elif credit_candidate and not debit_candidate:
-                debit, credit = None, credit_candidate
-            else:
-                # Common  debit, credit, balance
-                debit, credit = amounts[0], amounts[1]
-                if debit == 0:
-                    debit = None
-                if credit == 0:
-                    credit = None
+            previous_balance = balance
 
-        desc = match.group(2)
-        for token in re.findall(r"\(?\$?-?\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?\)?|\(?\$?-?\d+\.\d{2}\)?", desc):
-            desc = desc.replace(token, " ")
-        desc = re.sub(r"\s+", " ", desc).strip(" -")
-        ref_match = re.search(r"\b([A-Z]{2,}[-/]?\d{4,}|\d{6,})\b", desc)
-        reference = ref_match.group(1) if ref_match else None
-        if date is None:
-            flags.append("uncertain-date")
-            date = match.group(1)
-        rows.append(
-            {
-                "date": date,
-                "valueDate": date,
-                "description": desc or "Unparsed description",
-                "reference": reference,
-                "debit": debit,
-                "credit": credit,
-                "extractedBalance": extracted_balance,
-                "confidence": 0.55 if "ambiguous-debit-credit" in flags or "missing-amount-side" in flags else 0.7,
-                "flags": flags,
-            }
+        else:
+            # Assumes debit, credit, balance are the final
+            # three monetary values in the transaction row.
+            debit_candidate = amounts[-3]
+            credit_candidate = amounts[-2]
+            balance = amounts[-1]
+
+            debit = debit_candidate if debit_candidate != 0 else None
+            credit = credit_candidate if credit_candidate != 0 else None
+            previous_balance = balance
+
+        description = rest
+        for token in re.findall(amount_pattern, rest):
+            description = description.replace(token, " ", 1)
+        description = re.sub(r"\s+", " ", description).strip(" -")
+
+        ref_match = re.search(
+            r"\b([A-Z]{2,}[-/]?\d{4,}|\d{6,})\b",
+            description,
         )
+        reference = ref_match.group(1) if ref_match else None
+
+        if date is None:
+            date = date_raw
+            flags.append("uncertain-date")
+
+        if debit is None and credit is None:
+            flags.append("missing-amount")
+
+        rows.append({
+            "date": date,
+            "valueDate": date,
+            "description": description or "Unparsed description",
+            "reference": reference,
+            "debit": debit,
+            "credit": credit,
+            "extractedBalance": balance,
+            "confidence": 0.55 if (
+                "ambiguous-debit-credit" in flags
+                or "missing-amount-side" in flags
+            ) else 0.7,
+            "flags": flags,
+        })
+
     return rows

@@ -46,7 +46,12 @@ batchesRouter.post("/upload", upload.single("file"), async (req, res) => {
     return res.status(400).json({ error: "Upload a bank statement PDF." });
   }
   try {
-    const extracted = await extractPdfBuffer(req.file.buffer, req.file.originalname);
+    const password = typeof req.body.password === "string" ? req.body.password : "";
+const extracted = await extractPdfBuffer(
+  req.file.buffer,
+  req.file.originalname,
+  password
+);
     const batch = new Batch({ originalFilename: req.file.originalname });
     applyExtraction(batch, { ...extracted, filename: req.file.originalname });
     if (!extracted.ok) {

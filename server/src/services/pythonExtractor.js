@@ -3,10 +3,12 @@ import FormData from "form-data";
 
 const EXTRACTOR_URL = process.env.PYTHON_EXTRACTOR_URL || "http://127.0.0.1:5001";
 
-export async function extractPdfBuffer(buffer, filename) {
+export async function extractPdfBuffer(buffer, filename, password = "") {
   const form = new FormData();
   form.append("file", buffer, { filename, contentType: "application/pdf" });
-
+  if (password) {
+  form.append("password", password);
+}
   try {
     console.log("Extractor URL:", EXTRACTOR_URL);
 console.log("Calling extractor:", `${EXTRACTOR_URL}/extract`);

@@ -34,11 +34,13 @@ def extract():
         return jsonify({"ok": False, "error": "Only PDF files are supported."}), 400
 
     data = upload.read()
+    password = request.form.get("password", "")
+    
     if not data:
         return jsonify({"ok": False, "error": "The uploaded PDF is empty."}), 400
 
     try:
-        result = extract_statement(data, filename)
+        result = extract_statement(data, filename, password=password)
         return jsonify(result)
    
     except Exception as exc:

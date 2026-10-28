@@ -37,7 +37,9 @@ export function reconcileBatch({ openingBalance, statedClosingBalance, transacti
     if (extractedBalance != null && Math.abs(extractedBalance - running) > 0.009) {
       flags.add("balance-mismatch");
     }
-    if ((tx.confidence ?? 1) < 0.75) flags.add("uncertain");
+    if ((tx.confidence ?? 1) < 0.75 && !flags.has("line-parsed")) {
+  flags.add("uncertain");
+}
     if (debit == null && credit == null) flags.add("missing-amount");
 
     const status = flags.has("balance-mismatch") || flags.has("missing-amount") || flags.has("uncertain")
@@ -50,7 +52,7 @@ export function reconcileBatch({ openingBalance, statedClosingBalance, transacti
       debit: debit != null ? Math.abs(debit) : null,
       credit: credit != null ? Math.abs(credit) : null,
       extractedBalance,
-      runningBalance: opening == null && extractedBalance == null && index === 0 ? null : running,
+      runningBalance: extractedBalance ?? (opening == null && index === 0 ? null : running),
       flags: Array.from(flags),
       status,
     };

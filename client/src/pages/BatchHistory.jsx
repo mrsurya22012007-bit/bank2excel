@@ -4,7 +4,10 @@ import { api } from "../api.js";
 
 function money(value) {
   if (value === null || value === undefined) return "—";
-  return Number(value).toLocaleString(undefined, { style: "currency", currency: "USD" });
+  return Number(value).toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+  });
 }
 
 const statusLabel = {

@@ -12,14 +12,19 @@ async function parse(response) {
 }
 
 export const api = {
-  uploadPdf(file) {
-    const body = new FormData();
-    body.append("file", file);
-    return fetch(`${API_BASE_URL}/api/batches/upload`, {
-      method: "POST",
-      body,
-    }).then(parse);
-  },
+  uploadPdf(file, password = "") {
+  const body = new FormData();
+  body.append("file", file);
+
+  if (password) {
+    body.append("password", password);
+  }
+
+  return fetch(`${API_BASE_URL}/api/batches/upload`, {
+    method: "POST",
+    body,
+  }).then(parse);
+},
 
   listBatches(params = {}) {
     const query = new URLSearchParams();

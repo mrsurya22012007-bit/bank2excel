@@ -9,14 +9,23 @@ function money(value) {
   if (value === null || value === undefined || value === "") return "—";
   const n = Number(value);
   if (!Number.isFinite(n)) return "—";
-  return n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+  return n.toLocaleString("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
 }
 
 function signedMoney(value, sign) {
   if (value === null || value === undefined || value === "") return "—";
+
   const n = Math.abs(Number(value));
+
   if (!Number.isFinite(n) || n === 0) return "—";
-  return `${sign}$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  return `${sign}₹${n.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 export default function ConvertStatement() {
@@ -28,6 +37,7 @@ export default function ConvertStatement() {
   const [query, setQuery] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef(null);
+  const [pdfPassword, setPdfPassword] = useState("");
 
   const loadBatch = useCallback(async (id) => {
     const data = await api.getBatch(id);
@@ -50,7 +60,7 @@ export default function ConvertStatement() {
     setBusy(true);
     setError("");
     try {
-      const data = await api.uploadPdf(file);
+      const data = await api.uploadPdf(file, pdfPassword);
       setBatch(data.batch);
       setParams({ batch: data.batch._id });
     } catch (err) {
@@ -227,6 +237,28 @@ export default function ConvertStatement() {
           </svg>
         </div>
         <h2 className="font-sans text-2xl font-semibold">Drag & drop bank statement PDF here or browse local ledger files</h2>
+        <div className="mx-auto mt-5 max-w-md text-left">
+  <label
+    htmlFor="pdf-password"
+    className="mb-2 block text-sm font-semibold text-ink"
+  >
+    PDF Password (if required)
+  </label>
+
+  <input
+    id="pdf-password"
+    type="password"
+    value={pdfPassword}
+    onChange={(event) => setPdfPassword(event.target.value)}
+    placeholder="Enter PDF password"
+    autoComplete="off"
+    className="w-full rounded-xl border border-ink/20 bg-white px-4 py-3 text-sm outline-none focus:border-ink"
+  />
+
+  <p className="mt-1 text-xs text-ink/70">
+    Leave blank for PDFs that do not require a password.
+  </p>
+</div>
         <p className="mx-auto mt-3 max-w-2xl text-ink/70">
           Supports scanned raster or native vector bank PDFs (up to 50MB). Automated tabular tokenization via Python Flask, pdfplumber & OCR fallback.
         </p>
@@ -369,6 +401,11 @@ export default function ConvertStatement() {
                   <td className="px-2 py-2">
                     <span className={`rounded-full px-2 py-0.5 text-[11px] ${tx.status === "verified" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"}`}>
                       {tx.status === "verified" ? "Verified" : "Review"}
+{tx.flags?.length > 0 && (
+  <p className="mt-1 text-[10px] text-red-700">
+    {tx.flags.join(", ")}
+  </p>
+)}
                     </span>
                   </td>
                 </tr>
